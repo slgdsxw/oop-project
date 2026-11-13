@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from board import Board, Stone
+from board import Board, Position, Stone
 
 
 class MoveRecord:
@@ -68,3 +68,38 @@ class Game(ABC):
         self._finished = True
         self._winner = winner
         self._result_text = text
+
+
+class GomokuGame(Game):
+    def game_name(self):
+        return "五子棋"
+
+    def allow_pass(self):
+        return False
+
+    def try_place(self, position):
+        r, c = position.row, position.col
+        if not self._board.in_bounds(r, c):
+            raise ValueError("落子位置超出棋盘范围")
+        if self._board.get(r, c) is not Stone.EMPTY:
+            raise ValueError("该位置已有棋子")
+        stone = self._current_stone
+        self._board.set(r, c, stone)
+        self._history.append(MoveRecord(stone, position))
+        if self._has_five(r, c, stone):
+            self._finish(stone, "执{}方连成五子获胜".format(stone.symbol()))
+        elif self._board.is_full():
+            self._finish(None, "棋盘已满，平局")
+
+    def _has_five(self, row, col, stone):
+        for dr, dc in ((0, 1), (1, 0), (1, 1), (1, -1)):
+            count = 1
+            for sign in (1, -1):
+                r, c = row + sign * dr, col + sign * dc
+                while self._board.in_bounds(r, c) and self._board.get(r, c) is stone:
+                    count += 1
+                    r += sign * dr
+                    c += sign * dc
+            if count >= 5:
+                return True
+        return False
