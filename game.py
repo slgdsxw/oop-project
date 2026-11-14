@@ -135,11 +135,45 @@ class GomokuGame(Game):
 
 
 class GoGame(Game):
+    def __init__(self, size):
+        super().__init__(size)
+        self._position_history = {self._board.key()}
+
     def game_name(self):
         return "围棋"
 
     def allow_pass(self):
         return True
+
+    def try_place(self, position):
+        r, c = position.row, position.col
+        if not self._board.in_bounds(r, c):
+            raise ValueError("落子位置超出棋盘范围")
+        if self._board.get(r, c) is not Stone.EMPTY:
+            raise ValueError("该位置已有棋子")
+        stone = self._current_stone
+        opponent = stone.opposite()
+        self._board.set(r, c, stone)
+        captured = self._capture_groups(opponent)
+        if not captured and self._group_liberty(r, c) == 0:
+            self._board.set(r, c, Stone.EMPTY)
+            raise ValueError("落子后己方棋子无气，不允许自杀")
+        new_key = self._board.key()
+        if new_key in self._position_history:
+            for rr, cc in captured:
+                self._board.set(rr, cc, opponent)
+            self._board.set(r, c, Stone.EMPTY)
+            raise ValueError("落子违反打劫规则（禁止全局同形）")
+        self._position_history.add(new_key)
+        self._history.append(MoveRecord(stone, position, captured))
+        if self._board.is_full():
+            self._score_and_finish()
+
+    def _after_pass(self):
+        if len(self._history) >= 2 and \
+                self._history[-1].position is None and \
+                self._history[-2].position is None:
+            self._score_and_finish()
 
     def _neighbors(self, r, c):
         for dr, dc in ((0, 1), (0, -1), (1, 0), (-1, 0)):
@@ -189,3 +223,37 @@ class GoGame(Game):
                     self._board.set(gr, gc, Stone.EMPTY)
                 captured.extend(sorted(group))
         return captured
+
+    def _score_and_finish(self):
+        black = self._board.count(Stone.BLACK)
+        white = self._board.count(Stone.WHITE)
+        visited = set()
+        for r in range(self._board.size):
+            for c in range(self._board.size):
+                if self._board.get(r, c) is not Stone.EMPTY or (r, c) in visited:
+                    continue
+                region = {(r, c)}
+                frontier = [(r, c)]
+                borders = set()
+                while frontier:
+                    cr, cc = frontier.pop()
+                    for nr, nc in self._neighbors(cr, cc):
+                        cell = self._board.get(nr, nc)
+                        if cell is Stone.EMPTY:
+                            if (nr, nc) not in region:
+                                region.add((nr, nc))
+                                frontier.append((nr, nc))
+                        else:
+                            borders.add(cell)
+                visited |= region
+                if borders == {Stone.BLACK}:
+                    black += len(region)
+                elif borders == {Stone.WHITE}:
+                    white += len(region)
+        komi = 7.5
+        if black > white + komi:
+            self._finish(Stone.BLACK, "黑{} 白{}（贴{}目），黑胜".format(black, white, komi))
+        elif white + komi > black:
+            self._finish(Stone.WHITE, "黑{} 白{}（贴{}目），白胜".format(black, white, komi))
+        else:
+            self._finish(None, "黑{} 白{}（贴{}目），平局".format(black, white, komi))
