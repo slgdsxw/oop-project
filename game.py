@@ -132,3 +132,60 @@ class GomokuGame(Game):
             if count >= 5:
                 return True
         return False
+
+
+class GoGame(Game):
+    def game_name(self):
+        return "围棋"
+
+    def allow_pass(self):
+        return True
+
+    def _neighbors(self, r, c):
+        for dr, dc in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            nr, nc = r + dr, c + dc
+            if self._board.in_bounds(nr, nc):
+                yield nr, nc
+
+    def _collect_group(self, r, c):
+        color = self._board.get(r, c)
+        group = {(r, c)}
+        frontier = [(r, c)]
+        while frontier:
+            cr, cc = frontier.pop()
+            for nr, nc in self._neighbors(cr, cc):
+                if (nr, nc) not in group and self._board.get(nr, nc) is color:
+                    group.add((nr, nc))
+                    frontier.append((nr, nc))
+        return group
+
+    def _group_liberty(self, r, c):
+        color = self._board.get(r, c)
+        liberties = set()
+        for gr, gc in self._collect_group(r, c):
+            for nr, nc in self._neighbors(gr, gc):
+                if self._board.get(nr, nc) is Stone.EMPTY:
+                    liberties.add((nr, nc))
+        return len(liberties)
+
+    def _capture_groups(self, color):
+        captured = []
+        seen = set()
+        for r, c in list(self._board.occupied()):
+            if self._board.get(r, c) is not color or (r, c) in seen:
+                continue
+            group = self._collect_group(r, c)
+            seen |= group
+            has_liberty = False
+            for gr, gc in group:
+                for nr, nc in self._neighbors(gr, gc):
+                    if self._board.get(nr, nc) is Stone.EMPTY:
+                        has_liberty = True
+                        break
+                if has_liberty:
+                    break
+            if not has_liberty:
+                for gr, gc in group:
+                    self._board.set(gr, gc, Stone.EMPTY)
+                captured.extend(sorted(group))
+        return captured
