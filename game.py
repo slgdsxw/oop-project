@@ -64,6 +64,35 @@ class Game(ABC):
     def _switch_turn(self):
         self._current_stone = self._current_stone.opposite()
 
+    def pass_move(self):
+        if self._finished:
+            raise RuntimeError("对局已结束，无法虚着")
+        if not self.allow_pass():
+            raise RuntimeError("当前棋类不支持虚着")
+        self._history.append(MoveRecord(self._current_stone))
+        self._switch_turn()
+        self._after_pass()
+
+    def undo(self):
+        if self._finished:
+            raise RuntimeError("对局已结束，无法悔棋")
+        if not self._history:
+            raise RuntimeError("无棋可悔")
+        record = self._history.pop()
+        if record.position is not None:
+            self._board.set(record.position.row, record.position.col, Stone.EMPTY)
+        for r, c in record.captured:
+            self._board.set(r, c, record.stone.opposite())
+        self._current_stone = record.stone
+
+    def resign(self, stone):
+        if self._finished:
+            raise RuntimeError("对局已结束")
+        self._finish(stone.opposite(), "执{}方投子认负".format(stone.symbol()))
+
+    def _after_pass(self):
+        pass
+
     def _finish(self, winner, text):
         self._finished = True
         self._winner = winner
