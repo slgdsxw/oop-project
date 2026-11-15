@@ -93,6 +93,41 @@ class Game(ABC):
     def _after_pass(self):
         pass
 
+    def snapshot(self):
+        return {
+            "game": type(self).__name__,
+            "size": self._board.size,
+            "current": self._current_stone.name,
+            "board": [[cell.name for cell in row] for row in self._board._grid],
+            "history": [
+                {
+                    "stone": m.stone.name,
+                    "pos": None if m.position is None else [m.position.row, m.position.col],
+                    "captured": [list(p) for p in m.captured],
+                }
+                for m in self._history
+            ],
+        }
+
+    def restore(self, data):
+        size = data["size"]
+        if not isinstance(size, int) or size < 8 or size > 19:
+            raise ValueError("存档中棋盘大小不合法")
+        grid = [[Stone[cell] for cell in row] for row in data["board"]]
+        if len(grid) != size or any(len(row) != size for row in grid):
+            raise ValueError("存档棋盘数据不合法")
+        self._board = Board(size)
+        self._board.load_grid(grid)
+        self._current_stone = Stone[data["current"]]
+        self._history = []
+        for m in data["history"]:
+            pos = None if m["pos"] is None else Position(m["pos"][0], m["pos"][1])
+            captured = [tuple(p) for p in m["captured"]]
+            self._history.append(MoveRecord(Stone[m["stone"]], pos, captured))
+        self._finished = False
+        self._winner = None
+        self._result_text = ""
+
     def _finish(self, winner, text):
         self._finished = True
         self._winner = winner
