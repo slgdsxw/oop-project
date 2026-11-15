@@ -1,3 +1,5 @@
+import json
+
 from game import GomokuGame, GoGame
 
 
@@ -52,6 +54,33 @@ class GameController:
     def resign(self, stone):
         self._require_game()
         self._game.resign(stone)
+
+    def save(self, path):
+        self._require_game()
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(self._game.snapshot(), f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            raise RuntimeError("保存局面失败：{}".format(e))
+
+    def load(self, path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except OSError as e:
+            raise RuntimeError("读取存档失败：{}".format(e))
+        except json.JSONDecodeError:
+            raise RuntimeError("存档文件格式不合法")
+        game_cls = {c.__name__: c for c in (GomokuGame, GoGame)}.get(data.get("game"))
+        if game_cls is None:
+            raise ValueError("存档中游戏类型不合法")
+        game = game_cls(data.get("size", 0))
+        try:
+            game.restore(data)
+        except (KeyError, ValueError, TypeError) as e:
+            raise ValueError("存档数据不合法：{}".format(e))
+        self._game = game
+        return game
 
     def _require_game(self):
         if self._game is None:
