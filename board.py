@@ -30,7 +30,7 @@ class Position:
         return "Position({},{})".format(self.row, self.col)
 
     @classmethod
-    def parse(cls, text):
+    def parse(cls, text, size=None):
         parts = text.replace("，", ",").split(",")
         if len(parts) != 2:
             raise ValueError("坐标格式应为 行,列")
@@ -41,6 +41,8 @@ class Position:
             raise ValueError("坐标必须是整数")
         if row < 1 or col < 1:
             raise ValueError("坐标必须从 1 开始")
+        if size is not None and (row > size or col > size):
+            raise ValueError("坐标超出棋盘范围")
         return cls(row - 1, col - 1)
 
 
