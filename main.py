@@ -108,10 +108,15 @@ class ConsoleClient:
         game = self.controller.game
         if game is None:
             raise RuntimeError("当前没有对局")
-        return "restart 未实现"
+        game_type = type(game).__name__
+        game_type = "gomoku" if game_type == "GomokuGame" else "go"
+        self.controller.new_game(game_type, game.board.size)
+        return "已重新开始对局"
 
     def _cmd_hint(self, args):
         self.hint.toggle()
+        if self.hint.visible:
+            return "操作提示已显示"
         return "操作提示已隐藏，输入 hint 可重新显示"
 
     def _cmd_quit(self, args):
