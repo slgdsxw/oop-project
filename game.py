@@ -98,6 +98,9 @@ class Game(ABC):
             "game": type(self).__name__,
             "size": self._board.size,
             "current": self._current_stone.name,
+            "finished": self._finished,
+            "winner": None if self._winner is None else self._winner.name,
+            "result": self._result_text,
             "board": [[cell.name for cell in row] for row in self._board._grid],
             "history": [
                 {
@@ -124,9 +127,10 @@ class Game(ABC):
             pos = None if m["pos"] is None else Position(m["pos"][0], m["pos"][1])
             captured = [tuple(p) for p in m["captured"]]
             self._history.append(MoveRecord(Stone[m["stone"]], pos, captured))
-        self._finished = False
-        self._winner = None
-        self._result_text = ""
+        self._finished = bool(data.get("finished", False))
+        winner = data.get("winner")
+        self._winner = None if winner is None else Stone[winner]
+        self._result_text = data.get("result", "")
 
     def _finish(self, winner, text):
         self._finished = True
