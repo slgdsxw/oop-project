@@ -210,6 +210,19 @@ class GoGame(Game):
                 self._history[-2].position is None:
             self._score_and_finish()
 
+    def restore(self, data):
+        super().restore(data)
+        scratch = Board(self._board.size)
+        keys = {scratch.key()}
+        for record in self._history:
+            if record.position is not None:
+                scratch.set(record.position.row, record.position.col, record.stone)
+            for r, c in record.captured:
+                scratch.set(r, c, Stone.EMPTY)
+            keys.add(scratch.key())
+        keys.add(self._board.key())
+        self._position_history = keys
+
     def _neighbors(self, r, c):
         for dr, dc in ((0, 1), (0, -1), (1, 0), (-1, 0)):
             nr, nc = r + dr, c + dc
