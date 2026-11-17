@@ -1,12 +1,16 @@
+"""客户端：控制台命令循环、指令分发与程序入口。"""
+
 from board import Position
 from console_ui import BoardComponent, HintComponent, ScreenBuilder, StatusComponent, TitleComponent
 from controller import GameController
 
 
 class ConsoleClient:
+
     def __init__(self, controller):
         self.controller = controller
         self.hint = HintComponent()
+        # 界面"先设计后建造"：逐个添加组件后 build
         self.screen = (ScreenBuilder()
                        .add(TitleComponent("=== 棋类对战平台 ==="))
                        .add(StatusComponent())
@@ -16,6 +20,7 @@ class ConsoleClient:
         self._running = False
 
     def run(self):
+        """主循环：逐行读取并处理指令，异常输入统一转为错误提示。"""
         self._running = True
         print(self._render())
         while self._running:
@@ -34,6 +39,7 @@ class ConsoleClient:
             print(self._render())
 
     def stop(self):
+        """退出主循环。"""
         self._running = False
 
     def handle(self, line):
@@ -59,6 +65,7 @@ class ConsoleClient:
         return handler(parts[1:])
 
     def _cmd_start(self, args):
+        """开始新对局：start <gomoku|go> <大小>。"""
         if len(args) != 2:
             raise ValueError("用法：start <gomoku|go> <大小>")
         game_type = args[0].lower()
@@ -70,6 +77,7 @@ class ConsoleClient:
         return "已开始{}对局，棋盘 {}x{}".format(game.game_name(), size, size)
 
     def _cmd_place(self, args):
+        """落子：place <行> <列>。"""
         if len(args) != 2:
             raise ValueError("用法：place <行> <列>")
         game = self.controller.game
@@ -79,32 +87,38 @@ class ConsoleClient:
         return "落子成功：{} {}".format(args[0], args[1])
 
     def _cmd_pass(self, args):
+        """虚着（仅围棋）。"""
         self.controller.pass_move()
         return "已虚着，轮到对方行棋"
 
     def _cmd_undo(self, args):
+        """悔棋一步。"""
         self.controller.undo()
         return "已悔棋一步"
 
     def _cmd_resign(self, args):
+        """当前行棋方投子认负。"""
         game = self.controller.game
         stone = game.current_stone
         self.controller.resign(stone)
         return "执{}方投子认负，对局结束".format(stone.symbol())
 
     def _cmd_save(self, args):
+        """保存当前局面：save <文件路径>。"""
         if len(args) != 1:
             raise ValueError("用法：save <文件路径>")
         self.controller.save(args[0])
         return "局面已保存到 {}".format(args[0])
 
     def _cmd_load(self, args):
+        """读取存档覆盖当前局面：load <文件路径>。"""
         if len(args) != 1:
             raise ValueError("用法：load <文件路径>")
         game = self.controller.load(args[0])
         return "已读取存档：{}".format(game.game_name())
 
     def _cmd_restart(self, args):
+        """以相同类型和棋盘大小重新开始当前对局。"""
         game = self.controller.game
         if game is None:
             raise RuntimeError("当前没有对局")
@@ -128,6 +142,7 @@ class ConsoleClient:
 
 
 def main():
+    """程序入口：组装后端控制器并启动客户端。"""
     ConsoleClient(GameController()).run()
 
 

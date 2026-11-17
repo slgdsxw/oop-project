@@ -1,23 +1,29 @@
+"""对局流程与棋类规则：Game 抽象基类 + 五子棋 / 围棋实现"""
+
 from abc import ABC, abstractmethod
 
 from board import Board, Position, Stone
 
 
 class MoveRecord:
+    """一步棋的记录，悔棋时按记录逆向还原"""
+
     def __init__(self, stone, position=None, captured=None):
-        self.stone = stone
-        self.position = position
-        self.captured = captured or []
+        self.stone = stone              # 行棋方
+        self.position = position        # 落子坐标；虚着时为 None
+        self.captured = captured or []  # 该步提掉的对方棋子坐标
 
 
 class Game(ABC):
+    """对局抽象基类：维护局面状态与公共流程，规则差异由子类实现"""
+
     def __init__(self, size):
         self._board = Board(size)
         self._current_stone = Stone.BLACK
-        self._history = []
-        self._finished = False
-        self._winner = None
-        self._result_text = ""
+        self._history = []       # 已下的每一步棋
+        self._finished = False   # 对局是否结束
+        self._winner = None      # 获胜方（平局为 None）
+        self._result_text = ""   # 终局结果描述
 
     @property
     def board(self):
@@ -56,15 +62,14 @@ class Game(ABC):
         pass
 
     def place(self, position):
+        """落子入口：检查对局状态后交给子类规则执行，成功后交换行棋方"""
         if self._finished:
             raise RuntimeError("对局已结束，无法落子")
         self.try_place(position)
         self._switch_turn()
 
-    def _switch_turn(self):
-        self._current_stone = self._current_stone.opposite()
-
     def pass_move(self):
+        """虚着：只记录一步空着并交换行棋方"""
         if self._finished:
             raise RuntimeError("对局已结束，无法虚着")
         if not self.allow_pass():
@@ -74,6 +79,7 @@ class Game(ABC):
         self._after_pass()
 
     def undo(self):
+        """悔棋一步：撤回落子、恢复被提子、行棋方回退"""
         if self._finished:
             raise RuntimeError("对局已结束，无法悔棋")
         if not self._history:
@@ -81,6 +87,7 @@ class Game(ABC):
         record = self._history.pop()
         if record.position is not None:
             self._board.set(record.position.row, record.position.col, Stone.EMPTY)
+        # 恢复该步被提掉的棋子
         for r, c in record.captured:
             self._board.set(r, c, record.stone.opposite())
         self._current_stone = record.stone
@@ -91,9 +98,21 @@ class Game(ABC):
         self._finish(stone.opposite(), "执{}方投子认负".format(stone.symbol()))
 
     def _after_pass(self):
+        """虚招终局"""
         pass
 
+    def _finish(self, winner, text):
+        """标记对局结束并记录胜负"""
+        self._finished = True
+        self._winner = winner
+        self._result_text = text
+
+    def _switch_turn(self):
+        """交换行棋方"""
+        self._current_stone = self._current_stone.opposite()
+
     def snapshot(self):
+        """把局面导出为可 JSON 序列化的字典（备忘录）"""
         return {
             "game": type(self).__name__,
             "size": self._board.size,
@@ -113,6 +132,8 @@ class Game(ABC):
         }
 
     def restore(self, data):
+        """从存档字典恢复局面；数据不合法时抛 ValueError"""
+
         size = data["size"]
         if not isinstance(size, int) or size < 8 or size > 19:
             raise ValueError("存档中棋盘大小不合法")
@@ -127,18 +148,16 @@ class Game(ABC):
             pos = None if m["pos"] is None else Position(m["pos"][0], m["pos"][1])
             captured = [tuple(p) for p in m["captured"]]
             self._history.append(MoveRecord(Stone[m["stone"]], pos, captured))
+        # 终局状态一并恢复，避免已结束的对局读档后又能继续行棋
         self._finished = bool(data.get("finished", False))
         winner = data.get("winner")
         self._winner = None if winner is None else Stone[winner]
         self._result_text = data.get("result", "")
 
-    def _finish(self, winner, text):
-        self._finished = True
-        self._winner = winner
-        self._result_text = text
-
 
 class GomokuGame(Game):
+    """五子棋：先连成五子者获胜，棋盘下满则平局"""
+
     def game_name(self):
         return "五子棋"
 
@@ -160,6 +179,7 @@ class GomokuGame(Game):
             self._finish(None, "棋盘已满，平局")
 
     def _has_five(self, row, col, stone):
+        """从刚落的子出发，沿四个方向双向数连子是否达到五"""
         for dr, dc in ((0, 1), (1, 0), (1, 1), (1, -1)):
             count = 1
             for sign in (1, -1):
@@ -174,8 +194,11 @@ class GomokuGame(Game):
 
 
 class GoGame(Game):
+    """围棋：提子、禁自杀、禁全局同形（打劫）、双虚着数子终局"""
+
     def __init__(self, size):
         super().__init__(size)
+        # 记录出现过的所有局面指纹，用于禁止全局同形
         self._position_history = {self._board.key()}
 
     def game_name(self):
@@ -193,10 +216,13 @@ class GoGame(Game):
         stone = self._current_stone
         opponent = stone.opposite()
         self._board.set(r, c, stone)
+        # 落子后先提掉对方无气的棋子
         captured = self._capture_groups(opponent)
+        # 没有提子且己方整块无气 → 自杀，回滚
         if not captured and self._group_liberty(r, c) == 0:
             self._board.set(r, c, Stone.EMPTY)
             raise ValueError("落子后己方棋子无气，不允许自杀")
+        # 禁全局同形（打劫）：新局面与历史任何局面相同即不合法
         new_key = self._board.key()
         if new_key in self._position_history:
             for rr, cc in captured:
@@ -205,10 +231,12 @@ class GoGame(Game):
             raise ValueError("落子违反打劫规则（禁止全局同形）")
         self._position_history.add(new_key)
         self._history.append(MoveRecord(stone, position, captured))
+        # 棋盘下满（双方不停互相提不到子）时直接数子终局
         if self._board.is_full():
             self._score_and_finish()
 
     def _after_pass(self):
+        """双方连续虚着时按数子法判定胜负"""
         if len(self._history) >= 2 and \
                 self._history[-1].position is None and \
                 self._history[-2].position is None:
@@ -234,6 +262,7 @@ class GoGame(Game):
                 yield nr, nc
 
     def _collect_group(self, r, c):
+        """洪水填充收集 (r, c) 所在的连通同色棋块"""
         color = self._board.get(r, c)
         group = {(r, c)}
         frontier = [(r, c)]
@@ -246,6 +275,7 @@ class GoGame(Game):
         return group
 
     def _group_liberty(self, r, c):
+        """计算 (r, c) 所在棋块的气数"""
         color = self._board.get(r, c)
         liberties = set()
         for gr, gc in self._collect_group(r, c):
@@ -255,6 +285,7 @@ class GoGame(Game):
         return len(liberties)
 
     def _capture_groups(self, color):
+        """提掉 color 方所有无气的棋块，返回被提坐标列表"""
         captured = []
         seen = set()
         for r, c in list(self._board.occupied()):
@@ -277,8 +308,10 @@ class GoGame(Game):
         return captured
 
     def _score_and_finish(self):
+        """中国规则数子法：活子数 + 独占空点，黑贴 7.5 目判胜负"""
         black = self._board.count(Stone.BLACK)
         white = self._board.count(Stone.WHITE)
+        # 洪水填充划分每个空点区域，只邻接一方的区域算作该方地盘
         visited = set()
         for r in range(self._board.size):
             for c in range(self._board.size):

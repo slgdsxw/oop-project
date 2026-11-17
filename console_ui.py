@@ -1,15 +1,20 @@
+"""控制台界面：可组合的界面组件 + 建造者模式"""
+
 from abc import ABC, abstractmethod
 
 from board import Stone
 
 
 class UIComponent(ABC):
+    """界面组件接口：根据上下文渲染出若干行文本"""
+
     @abstractmethod
     def render(self, context):
         pass
 
 
 class TitleComponent(UIComponent):
+
     def __init__(self, text):
         self._text = text
 
@@ -18,6 +23,8 @@ class TitleComponent(UIComponent):
 
 
 class StatusComponent(UIComponent):
+    """状态栏：显示无对局 / 轮到哪方行棋 / 终局结果"""
+
     def render(self, context):
         game = context.get("game")
         if game is None:
@@ -33,6 +40,7 @@ class StatusComponent(UIComponent):
 
 
 class BoardComponent(UIComponent):
+
     def render(self, context):
         game = context.get("game")
         if game is None:
@@ -47,6 +55,8 @@ class BoardComponent(UIComponent):
 
 
 class HintComponent(UIComponent):
+    """操作提示面板，支持隐藏 / 重新显示"""
+
     def __init__(self):
         self._visible = True
 
@@ -80,22 +90,29 @@ class HintComponent(UIComponent):
 
 
 class ScreenBuilder:
+    """界面建造者：逐个添加组件，最后 build 出 Screen"""
+
     def __init__(self):
         self._components = []
 
     def add(self, component):
+        """添加一个界面组件（链式调用）"""
         self._components.append(component)
         return self
 
     def build(self):
+        """生成最终界面"""
         return Screen(self._components)
 
 
 class Screen:
+    """最终界面：按组件添加顺序拼接渲染结果"""
+
     def __init__(self, components):
         self._components = components
 
     def render(self, context):
+        """渲染整屏文本，组件之间以空行分隔"""
         lines = []
         for component in self._components:
             rendered = component.render(context)
