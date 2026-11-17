@@ -1,0 +1,166 @@
+{
+  "game": "GoGame",
+  "size": 8,
+  "current": "WHITE",
+  "board": [
+    [
+      "EMPTY",
+      "BLACK",
+      "WHITE",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "BLACK",
+      "EMPTY",
+      "BLACK",
+      "WHITE",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "EMPTY",
+      "BLACK",
+      "WHITE",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ],
+    [
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "BLACK"
+    ]
+  ],
+  "history": [
+    {
+      "stone": "BLACK",
+      "pos": [
+        0,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        1,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        1,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        0,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        2,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        2,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        1,
+        2
+      ],
+      "captured": [
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        1,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        7,
+        7
+      ],
+      "captured": []
+    }
+  ]
+}

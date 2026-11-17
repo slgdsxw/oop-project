@@ -1,0 +1,604 @@
+{
+  "game": "GomokuGame",
+  "size": 8,
+  "current": "BLACK",
+  "finished": true,
+  "winner": null,
+  "result": "棋盘已满，平局",
+  "board": [
+    [
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE"
+    ],
+    [
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK"
+    ],
+    [
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE"
+    ],
+    [
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK"
+    ],
+    [
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE"
+    ],
+    [
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK"
+    ],
+    [
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE"
+    ],
+    [
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK",
+      "WHITE",
+      "WHITE",
+      "BLACK",
+      "BLACK"
+    ]
+  ],
+  "history": [
+    {
+      "stone": "BLACK",
+      "pos": [
+        0,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        0,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        0,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        0,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        0,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        0,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        0,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        0,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        1,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        1,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        1,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        1,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        1,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        1,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        1,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        1,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        2,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        2,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        2,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        2,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        2,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        2,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        2,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        2,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        3,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        3,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        3,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        3,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        3,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        3,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        3,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        3,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        4,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        4,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        4,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        4,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        4,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        4,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        4,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        4,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        5,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        5,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        5,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        5,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        5,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        5,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        5,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        5,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        6,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        6,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        6,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        6,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        6,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        6,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        6,
+        5
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        6,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        7,
+        2
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        7,
+        0
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        7,
+        3
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        7,
+        1
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        7,
+        6
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        7,
+        4
+      ],
+      "captured": []
+    },
+    {
+      "stone": "BLACK",
+      "pos": [
+        7,
+        7
+      ],
+      "captured": []
+    },
+    {
+      "stone": "WHITE",
+      "pos": [
+        7,
+        5
+      ],
+      "captured": []
+    }
+  ]
+}
